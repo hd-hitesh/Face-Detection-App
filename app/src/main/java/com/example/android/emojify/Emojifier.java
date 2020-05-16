@@ -20,6 +20,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.util.Log;
 import android.util.SparseArray;
 import android.widget.Toast;
 
@@ -32,6 +33,7 @@ import timber.log.Timber;
 class Emojifier {
 
 
+    //private static final float EMOJI_SCALE_FACTOR = 1.0f;
     private static final float EMOJI_SCALE_FACTOR = .9f;
     private static final double SMILING_PROB_THRESHOLD = .15;
     private static final double EYE_OPEN_PROB_THRESHOLD = .5;
@@ -134,10 +136,14 @@ class Emojifier {
     private static Emoji whichEmoji(Face face) {
         // Log all the probabilities
         Timber.d("whichEmoji: smilingProb = " + face.getIsSmilingProbability());
-        Timber.d("whichEmoji: leftEyeOpenProb = "
-                + face.getIsLeftEyeOpenProbability());
-        Timber.d("whichEmoji: rightEyeOpenProb = "
-                + face.getIsRightEyeOpenProbability());
+        Timber.d("whichEmoji: leftEyeOpenProb = " + face.getIsLeftEyeOpenProbability());
+        Timber.d("whichEmoji: rightEyeOpenProb = " + face.getIsRightEyeOpenProbability());
+
+        Log.d("Probability","whichEmoji: smilingProb = " + face.getIsSmilingProbability());
+        Log.d("Probability","whichEmoji: leftEyeOpenProb = " + face.getIsLeftEyeOpenProbability());
+        Log.d("Probability","whichEmoji: rightEyeOpenProb = " + face.getIsRightEyeOpenProbability());
+        Log.d("Probability","______________________________________________________________");
+
 
 
         boolean smiling = face.getIsSmilingProbability() > SMILING_PROB_THRESHOLD;
@@ -197,18 +203,17 @@ class Emojifier {
 
         // Determine the size of the emoji to match the width of the face and preserve aspect ratio
         int newEmojiWidth = (int) (face.getWidth() * scaleFactor);
-        int newEmojiHeight = (int) (emojiBitmap.getHeight() *
-                newEmojiWidth / emojiBitmap.getWidth() * scaleFactor);
-
+//        int newEmojiHeight = (int) (emojiBitmap.getHeight() * newEmojiWidth / emojiBitmap.getWidth() * scaleFactor);
+        int newEmojiHeight = (int) face.getHeight();
 
         // Scale the emoji
         emojiBitmap = Bitmap.createScaledBitmap(emojiBitmap, newEmojiWidth, newEmojiHeight, false);
 
         // Determine the emoji position so it best lines up with the face
         float emojiPositionX =
-                (face.getPosition().x + face.getWidth() / 2) - emojiBitmap.getWidth() / 2;
+                (face.getPosition().x + face.getWidth() / 2) - (float) emojiBitmap.getWidth() / 2;
         float emojiPositionY =
-                (face.getPosition().y + face.getHeight() / 2) - emojiBitmap.getHeight() / 3;
+                (face.getPosition().y + face.getHeight() / 2) - (float)emojiBitmap.getHeight() / 2;
 
         // Create the canvas and draw the bitmaps to it
         Canvas canvas = new Canvas(resultBitmap);
